@@ -1,0 +1,37 @@
+
+table{
+    margin:0px auto;
+}
+
+th{
+    font-size:30px;
+    font-family:楷体;
+}
+
+td{
+    text-align: center;
+}
+
+a{
+    text-decoration: none;
+}
+
+#tj {
+    width: 250px;
+    margin: 0px auto;
+    border: 1px red solid;
+}
+
+h2 {
+    font-size: 30px;
+    font-family: 楷体;
+    text-align: center;
+}
+
+p {
+    text-indent: 1em;
+}
+
+.p {
+    text-align: center;
+}

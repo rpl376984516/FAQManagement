@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+            http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/tx
+            http://www.springframework.org/schema/tx/spring-tx.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--注解扫描位置-->
+    <context:component-scan base-package="com.t87.FAQManagement.mapper"/>
+    <context:component-scan base-package="com.t87.FAQManagement.service.impl"/>
+
+    <!-- 读取数据库配置文件 -->
+    <context:property-placeholder location="classpath:databases.properties"/>
+
+    <!--配置数据源(使用dbcp连接池)-->
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close" scope="singleton">
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+
+        <property name="initialSize" value="${initialSize}"/> <!--连接池在初始化连接时，第一次需要创建的个数 (默认值:0)-->
+        <property name="maxActive" value="${maxActive}"/> <!--同时连接的最大连接数-->
+        <property name="maxIdle" value="${maxIdle}"/> <!--可以允许的最大的空闲连接数 (默认:8)-->
+        <property name="minIdle" value="${minIdle}"/> <!--可以允许的最小的空闲连接数 (默认:0)-->
+        <property name="maxWait" value="${maxWait}"/> <!--最大的等待连接时间 (默认:-1)-->
+        <property name="removeAbandoned" value="${removeAbandoned}"/> <!--是否开启无用连接的回收机制-->
+        <property name="removeAbandonedTimeout" value="${removeAbandonedTimeout}"/> <!--控制连接池超出配置时间后回收机制-->
+        <!--SQL心跳包-->
+        <property name="testWhileIdle" value="true"/> <!--开启定时校验-->
+        <property name="testOnBorrow" value="false"/> <!--对拿到的连接是否校验-->
+        <property name="testOnReturn" value="false"/> <!--对于返回的连接是否校验-->
+        <property name="validationQuery" value="select 1"/> <!--定义校验所使用的SQL语句-->
+        <property name="timeBetweenEvictionRunsMillis" value="60000"/> <!--时间间隔-->
+        <property name="numTestsPerEvictionRun" value="${maxActive}"/> <!--定义每次校验的连接数-->
+    </bean>
+
+    <!--配置SqlSessionFactoryBean-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!--引用数据源-->
+        <property name="dataSource" ref="dataSource"/>
+        <!--配置别名-->
+        <property name="typeAliasesPackage" value="com.t87.FAQManagement.pojo"/>
+    </bean>
+
+    <!--配置DAO数据映射-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!--
+           MapperScannerConfigurer递归扫描基准包下所有接口，
+           若它们在SQL映射文件中定义过，则动态注册为MapperFactoryBean，
+           如此即可批量产生映射器实现类
+        -->
+        <property name="basePackage" value="com.t87.FAQManagement.mapper"/>
+    </bean>
+
+    <!--事务管理器-->
+    <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!--注解事务的支持-->
+    <tx:annotation-driven transaction-manager="txManager"/>
+
+</beans>

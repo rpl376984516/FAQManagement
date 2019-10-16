@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.t87.FAQManagement.mapper.FaqsMapper">
+
+    <!--
+        分页查询常见问题并按时间降序排列
+    -->
+    <select id="faqsList" resultType="Faqs">
+         select f.*,c.cname
+         from faqs f,classes c
+         where f.classid=c.id
+         order by f.createdate desc
+         limit #{currentlyPage},#{pageSize}
+    </select>
+
+    <!--总记录数-->
+    <select id="count" resultType="int">
+         select count(1) as count
+         from faqs
+    </select>
+
+    <!--保存常见问题-->
+    <insert id="addFaqs">
+        insert into faqs(title,createdate,content,classid)
+        values(#{title},#{createdate},#{content},#{classid})
+    </insert>
+
+    <!--删除常见问题-->
+    <delete id="deleteFaqs">
+        delete from faqs
+        where id=#{id}
+    </delete>
+
+</mapper>
